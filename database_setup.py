@@ -17,8 +17,8 @@ class item(Base):
     item_id = Column(Integer, primary_key = True)
     item_name = Column(String, nullable = False)
     item_description = Column(String)
-    category_id = Column(String, ForeignKey('category.category_id'))
-    category_relationship = relationship(category)
+    item_category_id = Column(String, ForeignKey('category.category_id'))
+    item_category_relationship = relationship(category)
 
 engine = create_engine('sqlite:///item_catalog.db')
 
