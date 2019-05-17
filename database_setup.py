@@ -14,7 +14,7 @@ class category(Base):
 
 class item(Base):
     __tablename__ = 'table_items'
-    item_id = Column(String, primary_key = True)
+    item_id = Column(Integer, primary_key = True)
     item_name = Column(String, nullable = False)
     item_description = Column(String)
     category_id = Column(String, ForeignKey('category.category_id'))
