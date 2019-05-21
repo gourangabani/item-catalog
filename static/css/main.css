@@ -1,0 +1,65 @@
+body {
+  font-family: 'Montserrat', sans-serif !important;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.navbar-link {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.navbar-brand {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: #555555;
+}
+
+.navbar-brand:hover {
+  color: #555555;
+}
+
+.navbar-collapse {
+  justify-content: flex-end;
+}
+
+img {
+  padding: 10px;
+}
+
+.card {
+  background: #ffffff;
+  color: #000000;
+}
+
+.card:hover {
+  background: #555555;
+  color: #ffffff;
+}
+
+.card::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
+footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+.bg-dark {
+  background-color: #000000 !important
+}
+
+.bg-light {
+  background-color: #555555 !important
+}
+
+a {
+  color: inherit;
+}
