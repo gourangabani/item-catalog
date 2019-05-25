@@ -10,16 +10,16 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
+# Categories
 class category(Base):
-
     __tablename__ = 'table_categories'
     category_id = Column(Integer, primary_key=True)
     category_name = Column(String, nullable=False)
     category_logo_filename = Column(String)
 
 
+# Items
 class item(Base):
-
     __tablename__ = 'table_items'
     item_id = Column(Integer, primary_key=True)
     item_name = Column(String, nullable=False)
@@ -28,7 +28,5 @@ class item(Base):
                                 ForeignKey('table_categories.category_id'))
     item_category_relationship = relationship(category)
 
-
 engine = create_engine('sqlite:///item_catalog.db')
-
 Base.metadata.create_all(engine)
