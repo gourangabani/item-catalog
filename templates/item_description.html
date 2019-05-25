@@ -21,7 +21,7 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link" href=""><i class="material-icons">
+          <a class="nav-link" href="http://localhost:8000/login"><i class="material-icons">
             account_circle
           </i></a>
         </li>
@@ -41,26 +41,6 @@
         </div>
       </div>
     </header>
-  </section>
-  <section>
-    <div class="container">
-      <div class="card-columns">
-        <a href="{{ url_for('edit_item', item_input = fetched_item.item_name) }}">
-          <div class="card border-0 shadow">
-            <div class="card-body text-center">
-              <h5 class="card-title mb-0">Edit Item</h5>
-            </div>
-          </div>
-        </a>
-        <a href="{{ url_for('delete_item', item_input = fetched_item.item_name) }}">
-          <div class="card border-0 shadow">
-            <div class="card-body text-center">
-              <h5 class="card-title mb-0">Delete Item</h5>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
   </section>
 
   <!-- Footer -->

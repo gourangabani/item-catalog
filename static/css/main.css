@@ -61,5 +61,9 @@ footer {
 }
 
 a {
-  color: inherit;
+  color: #ffffff;
+}
+
+.material-icons {
+  color: #ffffff;
 }

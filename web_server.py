@@ -26,6 +26,9 @@ session = DBSession()
 CLIENT_ID = json.loads(open('client_secret.json', 'r').read())['web'
         ]['client_id']
 
+# User Login Status Tracker
+login_session = {}
+
 # Home
 @app.route('/')
 @app.route('/catalog/')
@@ -34,8 +37,10 @@ def home():
     session = DBSession()
     categories = session.query(category).all()
     items = session.query(item).order_by(item.item_id.desc()).limit(10)
-    return render_template('home.html', fetched_categories=categories,
-                           fetched_items=items)
+    if 'username' not in login_session:
+        return render_template('home.html', fetched_categories=categories, fetched_items=items)
+    else:
+        return render_template('home_logged_in.html', fetched_categories=categories, fetched_items=items)
 
 # Category
 @app.route('/catalog/<string:category_input>/items/')
@@ -46,9 +51,14 @@ def items_in_category(category_input):
         session.query(category).filter_by(category_name=category_input).one()
     items = \
         session.query(item).filter_by(item_category_name=category_input).all()
-    return render_template('items_in_category.html',
-                           fetched_category=categories,
-                           fetched_items=items)
+    if 'username' not in login_session:
+        return render_template('items_in_category.html',
+                               fetched_category=categories,
+                               fetched_items=items)
+    else:
+        return render_template('items_in_category_logged_in.html',
+                               fetched_category=categories,
+                               fetched_items=items)
 
 # Item Description
 @app.route('/catalog/<string:category_input>/<string:item_input>/')
@@ -56,27 +66,33 @@ def item_description(category_input, item_input):
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     items = session.query(item).filter_by(item_name=item_input).one()
-    return render_template('item_description.html', fetched_item=items)
+    if 'username' not in login_session:
+        return render_template('item_description.html', fetched_item=items)
+    else:
+        return render_template('item_description_logged_in.html', fetched_item=items)
 
 # New Item
 @app.route('/catalog/add/', methods=['GET', 'POST'])
 def new_item():
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    if request.method == 'POST':
-        to_be_added_item = item(item_name=request.form['item_name'],
-                                item_description=request.form['item_description'
-                                ],
-                                item_category_name=request.form['item_category_name'
-                                ])
-        all_categories = session.query(category).all()
-        session.add(to_be_added_item)
-        session.commit()
-        return redirect(url_for('home'))
+    if 'username' not in login_session:
+        return redirect('/login')
     else:
-        all_categories = session.query(category).all()
-        return render_template('new_item.html',
-                               fetched_categories=all_categories)
+        if request.method == 'POST':
+            to_be_added_item = item(item_name=request.form['item_name'],
+                                    item_description=request.form['item_description'
+                                    ],
+                                    item_category_name=request.form['item_category_name'
+                                    ])
+            all_categories = session.query(category).all()
+            session.add(to_be_added_item)
+            session.commit()
+            return redirect(url_for('home'))
+        else:
+            all_categories = session.query(category).all()
+            return render_template('new_item.html',
+                                   fetched_categories=all_categories)
 
 # Edit Item
 @app.route('/catalog/<string:item_input>/edit/', methods=['GET', 'POST'
@@ -84,30 +100,33 @@ def new_item():
 def edit_item(item_input):
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    if request.method == 'POST':
-        to_be_edited_item = \
-            session.query(item).filter_by(item_name=item_input).one()
-        all_categories = session.query(category).all()
-        if request.form['item_name']:
-            to_be_edited_item.item_name = request.form['item_name']
-        if request.form['item_description']:
-            to_be_edited_item.item_description = \
-                request.form['item_description']
-        if request.form['item_category_name']:
-            to_be_edited_item.item_category_name = \
-                request.form['item_category_name']
-        session.add(to_be_edited_item)
-        session.commit()
-        return redirect(url_for('item_description',
-                        category_input=to_be_edited_item.item_category_name,
-                        item_input=item_input))
+    if 'username' not in login_session:
+        return redirect('/login')
     else:
-        to_be_edited_item = \
-            session.query(item).filter_by(item_name=item_input).one()
-        all_categories = session.query(category).all()
-        return render_template('edit_item.html',
-                               fetched_item=to_be_edited_item,
-                               fetched_categories=all_categories)
+        if request.method == 'POST':
+            to_be_edited_item = \
+                session.query(item).filter_by(item_name=item_input).one()
+            all_categories = session.query(category).all()
+            if request.form['item_name']:
+                to_be_edited_item.item_name = request.form['item_name']
+            if request.form['item_description']:
+                to_be_edited_item.item_description = \
+                    request.form['item_description']
+            if request.form['item_category_name']:
+                to_be_edited_item.item_category_name = \
+                    request.form['item_category_name']
+            session.add(to_be_edited_item)
+            session.commit()
+            return redirect(url_for('item_description',
+                            category_input=to_be_edited_item.item_category_name,
+                            item_input=item_input))
+        else:
+            to_be_edited_item = \
+                session.query(item).filter_by(item_name=item_input).one()
+            all_categories = session.query(category).all()
+            return render_template('edit_item.html',
+                                   fetched_item=to_be_edited_item,
+                                   fetched_categories=all_categories)
 
 # Delete Item
 @app.route('/catalog/<string:item_input>/delete/', methods=['GET',
@@ -115,18 +134,21 @@ def edit_item(item_input):
 def delete_item(item_input):
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    if request.method == 'POST':
-        to_be_deleted_item = \
-            session.query(item).filter_by(item_name=item_input).one()
-        session.delete(to_be_deleted_item)
-        session.commit()
-        return redirect(url_for('items_in_category',
-                        category_input=to_be_deleted_item.item_category_name))
+    if 'username' not in login_session:
+        return redirect('/login')
     else:
-        to_be_deleted_item = \
-            session.query(item).filter_by(item_name=item_input).one()
-        return render_template('delete_item.html',
-                               fetched_item=to_be_deleted_item)
+        if request.method == 'POST':
+            to_be_deleted_item = \
+                session.query(item).filter_by(item_name=item_input).one()
+            session.delete(to_be_deleted_item)
+            session.commit()
+            return redirect(url_for('items_in_category',
+                            category_input=to_be_deleted_item.item_category_name))
+        else:
+            to_be_deleted_item = \
+                session.query(item).filter_by(item_name=item_input).one()
+            return render_template('delete_item.html',
+                                   fetched_item=to_be_deleted_item)
 
 # Login
 @app.route('/login/')
@@ -209,7 +231,7 @@ def authenticated_success():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
     output = '<h1 class="text-white mt-5 mb-2">Welcome, ' \
-        + login_session['username'] + '!</h1>'
+        + login_session['username'] + "!</h1><a href='http://localhost:8000/catalog'><h6 class='text-white mt-5 mb-2'>Click here if you aren't redirected in a second.</h6></a>"
     return output
 
 # Logout
@@ -217,37 +239,26 @@ def authenticated_success():
 def do_logout():
     access_token = login_session.get('access_token')
     if access_token is None:
-        print 'Access Token is None'
-        response = \
-            make_response(json.dumps('Current user not connected.'),
-                          401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    print 'In gdisconnect access token is %s', access_token
-    print 'User name is: '
-    print login_session['username']
+        output = "401. No user is connected."
+        redirect_url = "http://localhost:8000/login"
+        return render_template('logout.html', message=output, url=redirect_url)
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' \
         % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print 'result is '
-    print result
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'
-                                 ), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        output = "Successful!"
+        redirect_url = "http://localhost:8000/catalog"
+        return render_template('logout.html', message=output, url=redirect_url)
     else:
-        response = \
-            make_response(json.dumps('Failed to revoke token for given user.'
-                          , 400))
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        output = "400. Failed to revoke token for given user."
+        redirect_url = "http://localhost:8000/catalog"
+        return render_template('logout.html', message=output, url=redirect_url)
 
 # Execution
 if __name__ == '__main__':
