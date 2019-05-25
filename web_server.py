@@ -27,6 +27,8 @@ def home():
 
 @app.route('/catalog/<string:category_input>/items/')
 def items_in_category(category_input):
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
     categories = \
         session.query(category).filter_by(category_name=category_input).one()
     items = \
@@ -36,16 +38,18 @@ def items_in_category(category_input):
                            fetched_items=items)
 
 
-# line 27 last element item_category_name line 30
-
 @app.route('/catalog/<string:category_input>/<string:item_input>/')
 def item_description(category_input, item_input):
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
     items = session.query(item).filter_by(item_name=item_input).one()
     return render_template('item_description.html', fetched_item=items)
 
 
 @app.route('/catalog/add/', methods=['GET', 'POST'])
 def new_item():
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
     if request.method == 'POST':
         to_be_added_item = item(item_name=request.form['item_name'],
                                 item_description=request.form['item_description'
@@ -65,6 +69,8 @@ def new_item():
 @app.route('/catalog/<string:item_input>/edit/', methods=['GET', 'POST'
            ])
 def edit_item(item_input):
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
     if request.method == 'POST':
         to_be_edited_item = \
             session.query(item).filter_by(item_name=item_input).one()
@@ -94,6 +100,8 @@ def edit_item(item_input):
 @app.route('/catalog/<string:item_input>/delete/', methods=['GET',
            'POST'])
 def delete_item(item_input):
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
     if request.method == 'POST':
         to_be_deleted_item = \
             session.query(item).filter_by(item_name=item_input).one()
