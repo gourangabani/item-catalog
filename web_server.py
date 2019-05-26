@@ -329,5 +329,4 @@ def jsonify_items_in_categories():
 
 
 if __name__ == '__main__':
-    app.debug = True  # remove
     app.run(host='0.0.0.0', port=8000)
