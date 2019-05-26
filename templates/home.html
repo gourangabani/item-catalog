@@ -72,7 +72,7 @@
         {% for fetched_category in fetched_categories %}
         <a href="{{ url_for('items_in_category', category_input = fetched_category.category_name) }}">
           <div class="card border-0 shadow">
-            <img src="{{ fetched_category.category_logo_filename }}" card-img-top alt="{{ fetched_category.category_name }}">
+            <img class="card-img-top" src={{ url_for('static', filename = fetched_category.category_logo_filename) }} card-img-top alt="{{ fetched_category.category_name }}">
             <div class="card-body text-center">
               <h5 class="card-title mb-0">{{ fetched_category.category_name }}</h5>
             </div>

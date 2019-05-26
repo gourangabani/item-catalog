@@ -27,10 +27,6 @@ body {
   justify-content: flex-end;
 }
 
-img {
-  padding: 10px;
-}
-
 .card {
   background: #ffffff;
   color: #000000;
@@ -47,7 +43,7 @@ img {
 }
 
 footer {
-  position: relative;
+  left: 0;
   bottom: 0;
   width: 100%;
 }
