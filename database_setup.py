@@ -35,7 +35,9 @@ class item(Base):
     item_description = Column(String)
     item_category_name = Column(Integer,
                                 ForeignKey('table_categories.category_id'))
-    item_category_relationship = relationship(category)
+    item_author = Column(String, nullable=False)
+    item_category_relationship = relationship(category,
+                                              cascade='delete')
 
     @property
     def serialize(self):
@@ -43,8 +45,9 @@ class item(Base):
             'category': self.item_category_name,
             'id': self.item_id,
             'name': self.item_name,
-            'description': self.item_description
-            }
+            'description': self.item_description,
+            'author': self.item_author
+        }
 
 
 engine = create_engine('sqlite:///item_catalog.db')

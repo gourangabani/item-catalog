@@ -96,12 +96,13 @@ def new_item():
     if 'username' not in login_session:
         return redirect('/login')
     else:
+        author = login_session['username']
         if request.method == 'POST':
             to_be_added_item = item(
                 item_name=request.form['item_name'],
                 item_description=request.form['item_description'],
-                item_category_name=request.form['item_category_name'])
-            all_categories = session.query(category).all()
+                item_category_name=request.form['item_category_name'],
+                item_author=author)
             session.add(to_be_added_item)
             session.commit()
             return redirect(url_for('home'))
@@ -124,22 +125,25 @@ def edit_item(item_input):
         if request.method == 'POST':
             to_be_edited_item = \
                 session.query(item).filter_by(item_name=item_input).one()
-            all_categories = session.query(category).all()
-            if request.form['item_name']:
-                to_be_edited_item.item_name = request.form['item_name']
-            if request.form['item_description']:
-                to_be_edited_item.item_description = \
-                    request.form['item_description']
-            if request.form['item_category_name']:
-                to_be_edited_item.item_category_name = \
-                    request.form['item_category_name']
-            session.add(to_be_edited_item)
-            session.commit()
-            return redirect(
-                url_for(
-                    'item_description',
-                    category_input=to_be_edited_item.item_category_name,
-                    item_input=item_input))
+            if to_be_edited_item.item_author == login_session['username']:
+                if request.form['item_name']:
+                    to_be_edited_item.item_name = request.form['item_name']
+                if request.form['item_description']:
+                    to_be_edited_item.item_description = \
+                        request.form['item_description']
+                if request.form['item_category_name']:
+                    to_be_edited_item.item_category_name = \
+                        request.form['item_category_name']
+                session.add(to_be_edited_item)
+                session.commit()
+                return redirect(
+                    url_for(
+                        'item_description',
+                        category_input=to_be_edited_item.item_category_name,
+                        item_input=item_input))
+            else:
+                flash("You are not authorised to make this change.")
+                return render_template('wrong_author.html')
         else:
             to_be_edited_item = \
                 session.query(item).filter_by(item_name=item_input).one()
@@ -162,12 +166,16 @@ def delete_item(item_input):
         if request.method == 'POST':
             to_be_deleted_item = \
                 session.query(item).filter_by(item_name=item_input).one()
-            session.delete(to_be_deleted_item)
-            session.commit()
-            return redirect(
-                url_for(
-                    'items_in_category',
-                    category_input=to_be_deleted_item.item_category_name))
+            if to_be_deleted_item.item_author == login_session['username']:
+                session.delete(to_be_deleted_item)
+                session.commit()
+                return redirect(
+                    url_for(
+                        'items_in_category',
+                        category_input=to_be_deleted_item.item_category_name))
+            else:
+                flash("You are not authorised to delete this item.")
+                return render_template('wrong_author.html')
         else:
             to_be_deleted_item = \
                 session.query(item).filter_by(item_name=item_input).one()
@@ -315,7 +323,7 @@ def do_logout():
 
 # JSON Endpoint
 
-@app.route('/catalog.json')
+@app.route('/catalog/json')
 def jsonify_items_in_categories():
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
@@ -325,8 +333,19 @@ def jsonify_items_in_categories():
                              for category_index in categories],
                    Item=[item_index.serialize for item_index in items])
 
+# JSON Endpoint for individual items
+
+
+@app.route('/catalog/<string:category_input>/<string:item_input>/json/')
+def jsonify_individual_items(category_input, item_input):
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    requested_item = session.query(item).filter_by(item_name=item_input).one()
+    return jsonify(Item=[requested_item.serialize])
+
+
 # Execution
 
-
 if __name__ == '__main__':
+    app.debug = True  # remove
     app.run(host='0.0.0.0', port=8000)
