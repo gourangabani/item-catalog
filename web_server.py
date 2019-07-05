@@ -18,14 +18,14 @@ from oauth2client.client import flow_from_clientsecrets, \
 app = Flask(__name__)
 app.secret_key = 'secret_key'
 
-engine = create_engine('sqlite:///item_catalog.db')
+engine = create_engine('postgresql://catalog:catalog@localhost/item-catalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 # OAuth Client ID
 
-CLIENT_ID = json.loads(open('client_secret.json', 'r').read())[
+CLIENT_ID = json.loads(open('/var/www/catalog/catalog/client_secret.json', 'r').read())[
     'web']['client_id']
 
 # User Login Status Tracker
@@ -215,7 +215,7 @@ def authenticated_success():
 
         # Upgrade the authorization code into a credentials object
 
-        oauth_flow = flow_from_clientsecrets('client_secret.json',
+        oauth_flow = flow_from_clientsecrets('/var/www/catalog/catalog/client_secret.json',
                                              scope='openid')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)

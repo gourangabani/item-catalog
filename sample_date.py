@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, category, item
 
-engine = create_engine('sqlite:///item_catalog.db')
+engine = create_engine('postgresql://catalog:catalog@localhost/item-catalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
@@ -30,31 +30,5 @@ session.add(category(category_name="Skateboarding",
                      category_logo_filename="images/skateboarding_logo.png"))
 session.add(category(category_name="Rock Climbing",
                      category_logo_filename="images/rock-climbing_logo.png"))
-
-# Items
-
-session.add(item(item_name="Football", item_category_name="Soccer",
-                 item_description="A football, soccer ball, or association \
-                 football ball is the ball used in the sport of association \
-                 football. ", item_author="anonymous"))
-session.add(item(item_name="Shin Guards", item_category_name="Soccer",
-                 item_description="A shin guard or shin pad is a piece of \
-                 equipment worn on the front of a player's shin to protect \
-                 them from injury.", item_author="anonymous"))
-session.add(item(item_name="Basketball", item_category_name="Basketball",
-                 item_description="A basketball is a spherical ball used in \
-                 basketball games.", item_author="anonymous"))
-session.add(item(item_name="Bat", item_category_name="Baseball",
-                 item_description="A baseball bat is a smooth wooden or metal \
-                 club used in the sport of baseball to hit the ball after it \
-                 is thrown by the pitcher.", item_author="anonymous"))
-session.add(item(item_name="Helmet", item_category_name="Baseball",
-                 item_description="A batting helmet is worn by batters in the \
-                 game of baseball or softball.", item_author="anonymous"))
-session.add(item(item_name="Glove", item_category_name="Baseball",
-                 item_description="A baseball glove or mitt is a large \
-                 leather glove worn by baseball players of the defending \
-                 team, which assists players in catching and fielding balls \
-                 hit by a batter or thrown by a teammate.", item_author="anonymous"))
-
+                     
 session.commit()
