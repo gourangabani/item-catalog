@@ -18,7 +18,7 @@ from oauth2client.client import flow_from_clientsecrets, \
 app = Flask(__name__)
 app.secret_key = 'secret_key'
 
-engine = create_engine('postgresql://catalog:catalog@localhost/item-catalog')
+engine = create_engine('postgresql://catalog:catalog@localhost/itemcatalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
@@ -347,5 +347,4 @@ def jsonify_individual_items(category_input, item_input):
 # Execution
 
 if __name__ == '__main__':
-    app.debug = True  # remove
     app.run(host='0.0.0.0', port=8000)
