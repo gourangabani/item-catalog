@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, category, item
 
-engine = create_engine('postgresql://catalog:catalog@localhost/itemcatalog')
+engine = create_engine('postgresql://itemcatalog:itemcatalog@localhost/itemcatalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()

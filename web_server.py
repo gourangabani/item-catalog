@@ -18,7 +18,7 @@ from oauth2client.client import flow_from_clientsecrets, \
 app = Flask(__name__)
 app.secret_key = 'secret_key'
 
-engine = create_engine('postgresql://catalog:catalog@localhost/itemcatalog')
+engine = create_engine('postgresql://itemcatalog:itemcatalog@localhost/itemcatalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
