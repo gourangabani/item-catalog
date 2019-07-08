@@ -29,7 +29,7 @@
 
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg bg-dark sticky-top" id="main_navigation">
-    <a class="navbar-brand" href="http://localhost:8000">ITEM CATALOG</a>
+    <a class="navbar-brand" href="http://13.235.155.183">ITEM CATALOG</a>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
@@ -58,7 +58,7 @@
                   // Send the code to the server
                   $.ajax({
                     type: 'POST',
-                    url: 'http://localhost:8000/authenticated?state={{STATE}}',
+                    url: 'http://13.235.155.183/authenticated?state={{STATE}}',
                     // Always include an `X-Requested-With` header in every AJAX request,
                     // to protect against CSRF attacks.
                     headers: {
