@@ -25,7 +25,7 @@ session = DBSession()
 
 # OAuth Client ID
 
-CLIENT_ID = json.loads(open('/var/www/catalog/catalog/client_secret.json', 'r').read())[
+CLIENT_ID = json.loads(open('/var/www/itemcatalog/itemcatalog/client_secret.json', 'r').read())[
     'web']['client_id']
 
 # User Login Status Tracker
